@@ -47,16 +47,14 @@ class SearchFilter extends Component<any, any> {
 
     const moduleTypeItems = [
       { value: 'All', label: 'All', disabled: false },
-      { value: 'Concept', label: 'Concept', disabled: false },
-      { value: 'Procedure', label: 'Procedure', disabled: false },
-      { value: 'Reference', label: 'Reference', disabled: false }
+      { value: 'CONCEPT', label: 'Concept', disabled: false },
+      { value: 'PROCEDURE', label: 'Procedure', disabled: false },
+      { value: 'REFERENCE', label: 'Reference', disabled: false }
     ]
 
     const sortItems = [
       { value: 'Uploaded date', label: 'Uploaded date', disabled: false },
       { value: 'Title', label: 'Title', disabled: false },
-      { value: 'Product', label: 'Product', disabled: false },
-      { value: 'Published date', label: 'Published date', disabled: false },
       { value: 'Updated date', label: 'Updated date', disabled: false },
       { value: 'Module type', label: 'Module type', disabled: false }
     ]
@@ -98,7 +96,7 @@ class SearchFilter extends Component<any, any> {
           </FormSelect>
 
           <Button onClick={this.setSortedUp} variant={ButtonVariant.control} aria-label="search button for search input">
-            {this.state.isSortedUp ? <SortAlphaDownIcon /> : <SortAlphaUpIcon />}
+            {this.state.isSortedUp ? <SortAlphaUpIcon /> : <SortAlphaDownIcon />}
           </Button>
 
 
@@ -107,7 +105,7 @@ class SearchFilter extends Component<any, any> {
           {chipGroups.map(currentGroup => (
             <ChipGroupToolbarItem key={currentGroup.category} categoryName={currentGroup.category}>
               {currentGroup.chips.map(chip => (
-                <Chip key={chip} onClick={this.deleteItem(chip)}>
+                <Chip key={chip} onClick={this.deleteItem(currentGroup.category, chip)}>
                   {chip}
                 </Chip>
               ))}
@@ -229,19 +227,22 @@ class SearchFilter extends Component<any, any> {
     });
   }
 
-  private deleteItem = (id) => (event: any) => {
+  private deleteItem = (product, id) => (event: any) => {
     const copyOfChipGroups = this.state.chipGroups;
-    let product = ''
     for (let i = 0; copyOfChipGroups.length > i; i++) {
-      const index = copyOfChipGroups[i].chips.indexOf(id);
-      if (index !== -1) {
-        const categoryKey = "category"
-        product = copyOfChipGroups[i][categoryKey]
-        copyOfChipGroups[i].chips.splice(index, 1);
-        // check if this is the last item in the group category
-        if (copyOfChipGroups[i].chips.length === 0) {
-          copyOfChipGroups.splice(i, 1);
+      const category = copyOfChipGroups[i].category
+      if (category === product) {
+        const index = copyOfChipGroups[i].chips.indexOf(id);
+        if (index !== -1) {
+          const categoryKey = "category"
+          product = copyOfChipGroups[i][categoryKey]
+          copyOfChipGroups[i].chips.splice(index, 1);
+          // check if this is the last item in the group category
+          if (copyOfChipGroups[i].chips.length === 0) {
+            copyOfChipGroups.splice(i, 1);
+          }
         }
+        break
       }
     }
 
@@ -387,7 +388,6 @@ class SearchFilter extends Component<any, any> {
     }
 
     this.props.filterQuery(searchQuery)
-    console.log("This is the query: " + searchQuery)
   }
 }
 
